@@ -72,4 +72,12 @@
 (defun intersectMany (Lsts) (onlyDuplicates(reduce 'append (mapcar 'distinct Lsts))))
 
 (print (intersectMany '((1 2 2 6 3) (2 3 3 8 4) (4 5 1))))
+
+; Дан список списков, объеднить их так, что бы все элементы попали в итоговый список строго один раз
+(defun dictinctMany (Lsts) (distinct(reduce 'append Lsts)))
+(print (dictinctMany '((1 2 2 6 3) (2 3 3 8 4) (4 5 1))))
+
+; Дан список, разбить его на два подсписка в соответствии с условием
+(defun splitByCondition (condp lst) (list (remove-if condp lst) (remove-if-not condp lst)))
+(print (splitByCondition 'numberp '(1 2 a b 3)))
 ```

@@ -80,4 +80,27 @@
 ; Дан список, разбить его на два подсписка в соответствии с условием
 (defun splitByCondition (condp lst) (list (remove-if condp lst) (remove-if-not condp lst)))
 (print (splitByCondition 'numberp '(1 2 a b 3)))
+
+; Дан список, сделать так, что бы все дубли шли друг за другом, при этом остальные значения не меняют своих мест
+(defun count1 (a L)
+  (cond
+   ((null L) 0)
+   ((equal a (car L)) (+ 1 (count1 a (cdr L))))
+   (t (count1 a (cdr L)))))
+
+(defun fillList (num acc counter)
+   (if (eq counter 0)
+        acc
+       (fillList num (cons num acc) (- counter 1))))
+
+(defun doublesInRow (List)
+    (cond 
+        ((null List) 
+             List)
+        ((member (car List) (cdr List))
+            (append (fillList (car List) nil (count1 (car List) List)) (remove (car List) (doublesInRow (cdr List)))))
+        (t (cons (car List) (doublesInRow (cdr List))))))
+
+(print (doublesInRow '(4 1 6 2 3 1 2 4 4)))
+
 ```

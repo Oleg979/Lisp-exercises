@@ -104,3 +104,131 @@
 (print (doublesInRow '(4 1 6 2 3 1 2 4 4)))
 
 ```
+
+
+let weights = new Array(35).fill(0).map(() => new Array(35).fill(0));
+
+data = {
+    "Q": [0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0],
+    "T": [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1],
+    "W": [1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1],
+    "Y": [0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1],
+    "Z": [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
+};
+
+function main() {
+    let i = 0;
+    Object.values(data).forEach(value => {
+        learn(value, i);
+        i++;
+    });
+
+
+    for (let i = 0; i < 35; i++) {
+        for (let j = 0; j < 35; j++) {
+            weights[i][j] /= 35;
+            if (i == j) {
+                weights[i][j] = 0;
+            }
+        }
+    }
+
+
+
+    // let encoded = [0,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,0, 0,0,0,0,0, 1,0,0,0,1];
+    let encoded = [0,1,0,1,1, 1,0,0,0,0, 0,1,0,0,0, 0,0,0,0,0, 0,0,0,1,0, 0,0,0,0,1, 1,1,1,0,0];
+    //let encoded = [0,0,0,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,0,0,0, 0,0,1,0,0, 0,0,1,0,0, 1,0,1,1,0];
+    //let encoded = [0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0];
+    //let encoded = [0,1,0,1,0, 1,0,0,0,1, 0,0,0,0,1, 0,1,0,0,1, 1,0,0,0,1, 1,0,0,0,0, 1,0,0,0,1];
+
+    printLetter(encoded);
+    console.log("\n");
+
+
+    let result = getResult(encoded);
+
+    printLetter(result);
+
+}
+
+
+function isEqual(old, newArr) {
+    let answer = true;
+    for (let i = 0; i < old.length; i++) {
+        if (old[i] != newArr[i]) {
+            answer = false;
+        }
+    }
+    return answer;
+}
+
+function normalize(input) {
+    for (let i = 0; i < input.length; i++) {
+        if (input[i] == 0) {
+            input[i] = -1;
+        }
+    }
+    return input;
+}
+
+function learn(input, index) {
+    input = normalize(input);
+    for (let i = 0; i < 35; i++) {
+        for (let j = 0; j < 35; j++) {
+            weights[i][j] += input[i] * input[j];
+        }
+    }
+}
+
+
+function printLetter(input) {
+    let picture = new Array(7).fill(0).map(() => new Array(5).fill(0));
+    let j = 0;
+    for (let i = 6; i >= 0; i--) {
+        for (let k = 0; k < 5; k++, j++) {
+            if (input[j] > 0) {
+                picture[i][k] = "0";
+            } else {
+                picture[i][k] = " ";
+            }
+        }
+    }
+
+    console.log(picture)
+}
+
+function getResult(input) {
+    input = normalize(input);
+    let oldActivation = new Array(35).fill(0);
+    let newActivation = new Array(35).fill(0);
+    oldActivation = input;
+    for (let i = 0; i < 35; i++) {
+        for (let j = 0; j < 35; j++) {
+            newActivation[i] += input[j] * weights[i][j];
+        }
+        if (newActivation[i] > 0) {
+            newActivation[i] = 1;
+        } else {
+            newActivation[i] = -1;
+        }
+    }
+    while (!isEqual(oldActivation, newActivation)) {
+        for (let i = 0; i < 35; i++) {
+            oldActivation[i] = newActivation[i];
+            newActivation[i] = 0;
+        }
+        for (let i = 0; i < 35; i++) {
+            for (let j = 0; j < 35; j++) {
+                newActivation[i] += oldActivation[j] * weights[i][j];
+            }
+            if (newActivation[i] > 0) {
+                newActivation[i] = 1;
+            } else {
+                newActivation[i] = -1;
+            }
+        }
+    }
+    return newActivation;
+}
+
+main()

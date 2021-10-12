@@ -3,8 +3,8 @@
     (if (null L)
         nil
         (if (atom (car L))
-            (append (list (list (car L) N)) (_unfold (cdr L) N))
-            (append (_unfold (car L) (+ 1 N)) (_unfold (cdr L) N))
+            (append (list(list (car L) N)) (_unfold (cdr L) N))
+            (cons (_unfold (car L) (+ 1 N)) (_unfold (cdr L) N))
         )
     )
 )
